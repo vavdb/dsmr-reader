@@ -269,6 +269,8 @@ def year_statistics(target_date):
 
 def update_electricity_statistics(reading):
     """ Updates the ElectricityStatistics records. """
+    print('update_electricity_statistics() - Start')
+
     MAP = {
         # Reading field: Stats record field.
         'phase_currently_delivered_l1': 'highest_usage_l1',
@@ -281,14 +283,27 @@ def update_electricity_statistics(reading):
     stats = ElectricityStatistics.get_solo()
     dirty = False
 
+    print('update_electricity_statistics() - Reading trigger:', reading.timestamp)
+
+    for x in MAP.keys():
+        print('update_electricity_statistics() - Reading', x, '   ', getattr(reading, x))
+
     for reading_field, stat_field in MAP.items():
+        print('update_electricity_statistics() - Current check:', reading_field, '/', stat_field)
         reading_value = getattr(reading, reading_field) or 0
         highest_value = getattr(stats, '{}_value'.format(stat_field)) or 0
+        print('update_electricity_statistics() -     reading_value / highest_value:  ', reading_value, '/', highest_value)
 
         if reading_value and Decimal(reading_value) > Decimal(highest_value):
+            print('update_electricity_statistics() -     New high for', stat_field)
             dirty = True
             setattr(stats, '{}_value'.format(stat_field), reading_value)
             setattr(stats, '{}_timestamp'.format(stat_field), reading.timestamp)
 
+    print('update_electricity_statistics() - Dirty:', dirty)
+
     if dirty:
+        print('update_electricity_statistics() -    Updated!')
         stats.save()
+
+    print('update_electricity_statistics() - End')
