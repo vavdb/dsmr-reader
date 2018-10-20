@@ -292,7 +292,9 @@ def update_electricity_statistics(reading):
         print('update_electricity_statistics() - Current check:', reading_field, '/', stat_field)
         reading_value = getattr(reading, reading_field) or 0
         highest_value = getattr(stats, '{}_value'.format(stat_field)) or 0
-        print('update_electricity_statistics() -     reading_value / highest_value:  ', reading_value, '/', highest_value)
+        print(
+            'update_electricity_statistics() -     reading_value / highest_value:  ', reading_value, '/', highest_value
+        )
 
         if reading_value and Decimal(reading_value) > Decimal(highest_value):
             print('update_electricity_statistics() -     New high for', stat_field)
